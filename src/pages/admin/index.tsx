@@ -1,9 +1,12 @@
 // src/pages/admin/index.tsx
 import { useEffect, useState } from 'react';
 import api from '../../utils/axios';
-import { Container, Typography, Button, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import { Container, Typography, Button, Table, TableBody, TableCell, TableHead, TableRow, IconButton, Box } from '@mui/material';
 import withAuth from '../../components/withAuth';
 import Link from 'next/link';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 
 interface Producto {
   id: number;
@@ -14,7 +17,7 @@ interface Producto {
 }
 
 function AdminPanel() {
-  const [productos, setProductos]: any = useState<Producto[]>([]);
+  const [productos, setProductos] = useState<Producto[]>([]);
 
   useEffect(() => {
     const fetchProductos = async () => {
@@ -29,43 +32,64 @@ function AdminPanel() {
     fetchProductos();
   }, []);
 
+  const handleEliminar = async (id: number) => {
+    try {
+      await api.delete(`/productos/${id}`);
+      // Actualiza la lista de productos después de eliminar
+      setProductos((prevProductos) => prevProductos.filter((producto) => producto.id !== id));
+    } catch (error) {
+      console.error('Error al eliminar el producto:', error);
+    }
+  };
+
   return (
-    <Container>
-      <Typography variant="h4" gutterBottom>
-        Panel de Administración
-      </Typography>
-      <Button variant="contained" color="primary" component={Link} href="/admin/nuevo">
-        Nuevo Producto
-      </Button>
-      <Table>
+    <Container sx={{ paddingTop: '20px' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <Typography variant="h4" gutterBottom>
+          Panel de Administración
+        </Typography>
+        <Button
+          variant="contained"
+          color="success"
+          startIcon={<AddIcon />}
+          component={Link}
+          href="/admin/nuevo"
+        >
+          Nuevo Producto
+        </Button>
+      </Box>
+      
+      <Table sx={{ minWidth: 650, boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
         <TableHead>
           <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell>Nombre</TableCell>
-            <TableCell>Precio</TableCell>
-            <TableCell>Stock</TableCell>
-            <TableCell>Acciones</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>ID</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Nombre</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Precio</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Stock</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Acciones</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {productos.map((producto: any) => (
-            <TableRow key={producto.id}>
+          {productos.map((producto) => (
+            <TableRow key={producto.id} hover sx={{ '&:hover': { backgroundColor: '#f9f9f9' } }}>
               <TableCell>{producto.id}</TableCell>
               <TableCell>{producto.nombre}</TableCell>
               <TableCell>${producto.precio}</TableCell>
               <TableCell>{producto.stock}</TableCell>
               <TableCell>
-                <Button
-                  variant="contained"
+                <IconButton
                   component={Link}
                   href={`/admin/editar/${producto.id}`}
-                  style={{ marginRight: 8 }}
+                  sx={{ color: 'primary.main', marginRight: '10px' }}
                 >
-                  Editar
-                </Button>
-                <Button variant="contained" color="secondary" onClick={() => handleEliminar(producto.id)}>
-                  Eliminar
-                </Button>
+                  <EditIcon />
+                </IconButton>
+                <IconButton
+                  onClick={() => handleEliminar(producto.id)}
+                  sx={{ color: 'error.main' }}
+                >
+                  <DeleteIcon />
+                </IconButton>
               </TableCell>
             </TableRow>
           ))}
@@ -75,14 +99,5 @@ function AdminPanel() {
   );
 }
 
-const handleEliminar = async (id: number) => {
-  try {
-    await api.delete(`/productos/${id}`);
-    // Actualiza la lista de productos después de eliminar
-    setProductos((prevProductos: any): any => prevProductos.filter((producto: any) => producto.id !== id));
-  } catch (error) {
-    console.error('Error al eliminar el producto:', error);
-  }
-};
-
 export default withAuth(AdminPanel);
+
