@@ -17,6 +17,9 @@ export default function ProductoDetalle() {
   const router = useRouter();
   const { id } = router.query;
   const [producto, setProducto] = useState<Producto | null>(null);
+  const imagenUrl = producto?.imagen
+  ? `http://localhost:3000/uploads/${producto.imagen}`
+  : '/images/default-product.png';
 
   useEffect(() => {
     if (id) {
@@ -43,11 +46,11 @@ export default function ProductoDetalle() {
         {/* Imagen del producto */}
         <Grid item xs={12} md={6}>
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <img
-              src={producto.imagen || '/images/default-product.png'}
-              alt={producto.nombre}
-              style={{ maxWidth: '100%', height: 'auto', borderRadius: '10px' }}
-            />
+          <img   
+            src={imagenUrl}
+            alt={producto.nombre}
+            style={{ maxWidth: '100%', height: 'auto' }}
+          />
           </Box>
         </Grid>
 

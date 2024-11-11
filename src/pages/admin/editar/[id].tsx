@@ -10,7 +10,7 @@ interface ProductoFormInputs {
   nombre: string;
   descripcion: string;
   precio: number;
-  imagen: string;
+  imagen: FileList;
   stock: number;
   categoriaId: number;
 }
@@ -20,7 +20,7 @@ function EditarProducto() {
   const router = useRouter();
   const { id } = router.query;
   const [loaded, setLoaded] = useState(false);  // Nuevo estado para indicar si los datos han sido cargados
-
+  /*
   useEffect(() => {
     if (id) {
       const fetchProducto = async () => {
@@ -43,11 +43,27 @@ function EditarProducto() {
 
       fetchProducto();
     }
-  }, [id, setValue]);
+  }, [id, setValue]);*/
 
   const onSubmit = async (data: ProductoFormInputs) => {
+    const formData = new FormData();
+    formData.append('nombre', data.nombre);
+    formData.append('descripcion', data.descripcion);
+    formData.append('precio', data.precio.toString());
+    formData.append('categoriaId', data.categoriaId.toString());
+  
+    if (data.imagen && data.imagen.length > 0) {
+      formData.append('imagen', data.imagen[0]); // Nueva imagen
+    } else {
+      formData.append('imagen', data.imagen[0]); // Imagen existente
+    }
+  
     try {
-      await api.put(`/productos/${id}`, data);
+      await api.put(`/productos/${id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       router.push('/admin');
     } catch (error) {
       console.error('Error al actualizar producto:', error);

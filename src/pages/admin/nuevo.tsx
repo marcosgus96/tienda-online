@@ -1,17 +1,18 @@
 // src/pages/admin/nuevo.tsx
 import { useForm } from 'react-hook-form';
-import { Container, TextField, Button, Typography, Grid, Box, Paper } from '@mui/material';
+import { Container, TextField, Button, Typography, Grid, Box, Paper, Input } from '@mui/material';
 import api from '../../utils/axios';
 import { useRouter } from 'next/router';
 import withAuth from '../../components/withAuth';
+import axios from 'axios';
 
 interface ProductoFormInputs {
   nombre: string;
   descripcion: string;
   precio: number;
-  stock: number;
-  imagen: string;
   categoriaId: number;
+  stock: number;
+  imagen: FileList; // Para manejar archivos
 }
 
 function NuevoProducto() {
@@ -19,13 +20,39 @@ function NuevoProducto() {
   const router = useRouter();
 
   const onSubmit = async (data: ProductoFormInputs) => {
+    const formData = new FormData();
+    formData.append('nombre', data.nombre);
+    formData.append('descripcion', data.descripcion);
+    formData.append('precio', data.precio.toString());
+    formData.append('categoriaId', data.categoriaId.toString());
+    formData.append('stock', data.stock.toString());
+  
+    if (data.imagen && data.imagen.length > 0) {
+      formData.append('imagen', data.imagen[0]); // Archivo de imagen
+    }
+
+    // Imprimir los datos para ver qué se está enviando
+    const entriesArray = Array.from(formData.entries());
+    entriesArray.forEach(([key, value]) => {
+      console.log(key, value);
+    });
+  
     try {
-      await api.post('/productos', data);
+      await api.post('/productos', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       router.push('/admin');
     } catch (error) {
-      console.error('Error al crear producto:', error);
+      if (axios.isAxiosError(error)) {
+        console.error('Error al crear producto:', error.response?.data);
+      } else {
+        console.error('Error al crear producto:', error);
+      }
     }
   };
+  
 
   return (
     <Container sx={{ marginTop: '40px' }}>
@@ -55,60 +82,57 @@ function NuevoProducto() {
         {/* Formulario de creación de producto */}
         <Grid item xs={12} md={7}>
           <Paper elevation={3} sx={{ padding: '20px', borderRadius: '10px' }}>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <TextField
-                label="Nombre"
-                fullWidth
-                margin="normal"
-                {...register('nombre', { required: 'El nombre es obligatorio' })}
-                error={Boolean(errors.nombre)}
-                helperText={errors.nombre?.message}
-              />
-              <TextField
-                label="Descripción"
-                fullWidth
-                margin="normal"
-                {...register('descripcion')}
-              />
-              <TextField
-                label="Precio"
-                type="number"
-                fullWidth
-                margin="normal"
-                {...register('precio', { required: 'El precio es obligatorio', valueAsNumber: true })}
-                error={Boolean(errors.precio)}
-                helperText={errors.precio?.message}
-              />
-              <TextField
-                label="Stock"
-                type="number"
-                fullWidth
-                margin="normal"
-                {...register('stock', { required: 'El stock es obligatorio', valueAsNumber: true })}
-                error={Boolean(errors.stock)}
-                helperText={errors.stock?.message}
-              />
-              <TextField
-                label="Imagen (URL)"
-                fullWidth
-                margin="normal"
-                {...register('imagen')}
-              />
-              <TextField
-                label="Categoría ID"
-                type="number"
-                fullWidth
-                margin="normal"
-                {...register('categoriaId', { required: 'La categoría es obligatoria', valueAsNumber: true })}
-                error={Boolean(errors.categoriaId)}
-                helperText={errors.categoriaId?.message}
-              />
-              <Box sx={{ textAlign: 'center', marginTop: '20px' }}>
-                <Button type="submit" variant="contained" color="primary" sx={{ padding: '10px 40px' }}>
-                  Crear
-                </Button>
-              </Box>
-            </form>
+          <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
+        <TextField
+          label="Nombre"
+          fullWidth
+          margin="normal"
+          {...register('nombre', { required: 'El nombre es obligatorio' })}
+          error={Boolean(errors.nombre)}
+          helperText={errors.nombre?.message}
+        />
+        <TextField
+          label="Descripción"
+          fullWidth
+          margin="normal"
+          {...register('descripcion')}
+        />
+        <TextField
+          label="Precio"
+          type="number"
+          fullWidth
+          margin="normal"
+          {...register('precio', { required: 'El precio es obligatorio', valueAsNumber: true })}
+          error={Boolean(errors.precio)}
+          helperText={errors.precio?.message}
+        />
+       <TextField
+          label="Stock"
+          type="number"
+          fullWidth
+          margin="normal"
+          {...register('stock', { required: 'El stock es obligatorio', valueAsNumber: true })}
+          error={Boolean(errors.stock)}
+          helperText={errors.stock?.message}
+        />
+        <TextField
+          label="Categoría ID"
+          type="number"
+          fullWidth
+          margin="normal"
+          {...register('categoriaId', { required: 'La categoría es obligatoria', valueAsNumber: true })}
+          error={Boolean(errors.categoriaId)}
+          helperText={errors.categoriaId?.message}
+        />
+        <Input
+          type="file"
+          inputProps={{ accept: 'image/*' }}
+          {...register('imagen')}
+        />
+        <Button type="submit" variant="contained" color="primary">
+          Crear
+        </Button>
+      </form>
           </Paper>
         </Grid>
       </Grid>
@@ -117,4 +141,3 @@ function NuevoProducto() {
 }
 
 export default withAuth(NuevoProducto);
-

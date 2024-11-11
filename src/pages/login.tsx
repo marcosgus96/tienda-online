@@ -66,6 +66,7 @@ export default function Login() {
   const onSubmit = async (data: LoginFormInputs) => {
     try {
       const response = await api.post('/auth/login', data);
+      console.log('Respuesta del login:', response); // Verifica la respuesta
       localStorage.setItem('token', response.data.access_token);
       router.push('/admin');
     } catch (error) {
@@ -75,34 +76,34 @@ export default function Login() {
 
   return (
     <LoginBox>
-      <FormContainer>
-        <Typography variant="h5" color="white" gutterBottom>
-          Formulario Login - Tienda Online
-        </Typography>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <StyledTextField
-            label="Usuario"
-            fullWidth
-            {...register('username', { required: 'El nombre de usuario es obligatorio' })}
-            error={Boolean(errors.username)}
-            helperText={errors.username?.message}
-          />
-          <StyledTextField
-            label="Contraseña"
-            type="password"
-            fullWidth
-            {...register('password', { required: 'La contraseña es obligatoria' })}
-            error={Boolean(errors.password)}
-            helperText={errors.password?.message}
-          />
-          <StyledButton type="submit" fullWidth>
-            Ingresar
-          </StyledButton>
-        </form>
-        <Link href="#" color="inherit" underline="none" sx={{ color: '#FFF', display: 'block', marginTop: '1rem' }}>
-          ¿Olvidó Contraseña?
-        </Link>
-      </FormContainer>
-    </LoginBox>
+    <FormContainer>
+      <Typography variant="h5" color="white" gutterBottom>
+        Formulario Login - Tienda Online
+      </Typography>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <StyledTextField
+          label="Usuario"
+          fullWidth
+          {...register('username', { required: 'El nombre de usuario es obligatorio' })}
+          error={Boolean(errors.username)}
+          helperText={errors.username?.message}
+        />
+        <StyledTextField
+          label="Contraseña"
+          type="password"
+          fullWidth
+          {...register('password', { required: 'La contraseña es obligatoria' })}
+          error={Boolean(errors.password)}
+          helperText={errors.password?.message}
+        />
+        <StyledButton type="submit" fullWidth>
+          Ingresar
+        </StyledButton>
+      </form>
+      <Link href="#" color="inherit" underline="none" sx={{ color: '#FFF', display: 'block', marginTop: '1rem' }}>
+        ¿Olvidó Contraseña?
+      </Link>
+    </FormContainer>
+  </LoginBox>
   );
 }

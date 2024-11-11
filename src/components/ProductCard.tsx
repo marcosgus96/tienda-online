@@ -15,6 +15,10 @@ interface Props {
 }
 
 export default function ProductCard({ producto }: Props) {
+  const imagenUrl = producto.imagen
+    ? `http://localhost:3000/uploads/${producto.imagen}`
+    : '/images/default-product.png';
+
   return (
     <Card>
       <Link href={`/productos/${producto.id}`} passHref>
@@ -22,7 +26,7 @@ export default function ProductCard({ producto }: Props) {
           <CardMedia
             component="img"
             height="140"
-            image={producto.imagen || '/images/default-product.png'}
+            image={imagenUrl}
             alt={producto.nombre}
           />
           <CardContent>
