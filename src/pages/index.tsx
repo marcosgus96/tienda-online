@@ -130,10 +130,12 @@ export default function Home() {
       <Typography variant="h4" gutterBottom>
         Productos Destacados
       </Typography>
+
+      
       <Grid container spacing={3}>
         {productos.map((producto) => (
-          <Grid item xs={12} sm={6} md={4} key={producto.id}>
-            <ProductCard producto={producto} />
+          <Grid item xs={12} sm={6} md={4} key={producto.id} data-cy="producto-item">
+            <ProductCard  producto={producto} />
           </Grid>
         ))}
       </Grid>

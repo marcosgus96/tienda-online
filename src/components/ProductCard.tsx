@@ -20,27 +20,25 @@ export default function ProductCard({ producto }: Props) {
     : '/images/default-product.png';
 
   return (
-    <Card>
+    <Card data-cy="producto-item">
       <Link href={`/productos/${producto.id}`} passHref>
-        <CardActionArea>
-          <CardMedia
-            component="img"
-            height="140"
-            image={imagenUrl}
-            alt={producto.nombre}
-          />
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              {producto.nombre}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {producto.descripcion}
-            </Typography>
-            <Typography variant="h6" color="primary">
-              ${producto.precio}
-            </Typography>
-          </CardContent>
-        </CardActionArea>
+      <CardMedia
+        component="img"
+        height="140"
+        image={producto.imagen}
+        alt={producto.nombre}
+      />
+      <CardContent>
+        <Typography gutterBottom variant="h5" component="div">
+          {producto.nombre}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {producto.descripcion}
+        </Typography>
+        <Typography variant="h6" color="text.primary">
+          ${producto.precio}
+        </Typography>
+      </CardContent>
       </Link>
     </Card>
   );

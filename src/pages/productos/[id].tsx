@@ -41,7 +41,7 @@ export default function ProductoDetalle() {
   }
 
   return (
-    <Container sx={{ padding: '40px 0' }}>
+    <Container sx={{ padding: '40px 0' }} data-cy="producto-detalle">
       <Grid container spacing={4}>
         {/* Imagen del producto */}
         <Grid item xs={12} md={6}>

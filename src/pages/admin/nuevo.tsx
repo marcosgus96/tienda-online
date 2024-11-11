@@ -1,5 +1,5 @@
 // src/pages/admin/nuevo.tsx
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { Container, TextField, Button, Typography, Grid, Box, Paper, Input } from '@mui/material';
 import api from '../../utils/axios';
 import { useRouter } from 'next/router';
@@ -16,7 +16,7 @@ interface ProductoFormInputs {
 }
 
 function NuevoProducto() {
-  const { register, handleSubmit, formState: { errors } } = useForm<ProductoFormInputs>();
+  const { control, register, handleSubmit, formState: { errors } } = useForm<ProductoFormInputs>();
   const router = useRouter();
 
   const onSubmit = async (data: ProductoFormInputs) => {
@@ -91,12 +91,21 @@ function NuevoProducto() {
           error={Boolean(errors.nombre)}
           helperText={errors.nombre?.message}
         />
-        <TextField
-          label="Descripción"
-          fullWidth
-          margin="normal"
-          {...register('descripcion')}
-        />
+        <Controller
+                name="descripcion"
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <TextField
+                    label="Descripción"
+                    fullWidth
+                    margin="normal"
+                    multiline
+                    inputProps={{ 'data-cy': 'input-descripcion' }}
+                    {...field}
+                  />
+                )}
+              />
         <TextField
           label="Precio"
           type="number"
